@@ -98,7 +98,42 @@ CPLogRegister(CPLogPrint, "warn");
 
 @end
 
+function printUsage()
+{
+	
+}
+
+function processArgs()
+{
+	if (system.args.length < 1)
+	return printUsage();
+
+	var index = 0,
+	count = system.args.length;
+
+	for (; index < count; ++index)
+	{
+		var argument = system.args[index];
+
+		switch (argument)
+		{
+			case "version":
+			case "--version":   return print("capp version 0.7.1");
+
+			case "-h":
+			case "--help":      return printUsage();
+
+			case "config":      return config.apply(this, system.args.slice(index + 1));
+
+			case "gen":         return gen.apply(this, system.args.slice(index + 1));
+
+			default:            print("unknown command " + argument);
+		}
+	}
+}
+
 print(args);
+processArgs();
 
 runner = [[OJTestRunnerText alloc] init];
 [runner startWithArguments:args];
