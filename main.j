@@ -1,5 +1,6 @@
 @import <Foundation/Foundation.j>
 
+@import "getopt.j"
 @import "OJTestCase.j"
 @import "OJTestSuite.j"
 @import "OJTestResult.j"
@@ -98,51 +99,15 @@ CPLogRegister(CPLogPrint, "warn");
 
 @end
 
-function printUsage()
-{
-	print("Usage: ojtest ");
-	quit();
-}
+var _go_c;
+while ((_go_c = getopt(ARGC, ARGV, "ab:cd")) != null)
+    print("c = <" + _go_c + ">, optarg = <%s>\n", GetOpt.optarg);
 
-function processArgs(args)
-{
-	if (args.length < 1)
-	return printUsage();
+print("non-option arguments:");
+for (; GetOpt.optind < args.length; GetOpt.optind++)
+    print("\targs[" + GetOpt.optind + "] = <" + args[GetOpt.optind] + ">");
 
-	var index = 0,
-	count = args.length;
-
-    var unprocessed_args = [];
-	for (; index < count; ++index)
-	{
-		var argument = args[index];
-
-		switch (argument)
-		{
-			case "-v":
-			case "--version":
-			    print("ojtest version 0.7.1");
-			    quit();
-
-			case "-h":
-			case "--help":
-			    printUsage();
-			    break;
-
-            case "-I":
-                
-                break;
-
-			default:
-			    unprocessed_args.push(argument);
-		}
-	}
-	
-	return unprocessed_args;
-}
-
-args = processArgs(args);
-print(args);
+//print(args);
 
 runner = [[OJTestRunnerText alloc] init];
 [runner startWithArguments:args];
