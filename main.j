@@ -100,40 +100,49 @@ CPLogRegister(CPLogPrint, "warn");
 
 function printUsage()
 {
-	
+	print("Usage: ojtest ");
+	quit();
 }
 
-function processArgs()
+function processArgs(args)
 {
-	if (system.args.length < 1)
+	if (args.length < 1)
 	return printUsage();
 
 	var index = 0,
-	count = system.args.length;
+	count = args.length;
 
+    var unprocessed_args = [];
 	for (; index < count; ++index)
 	{
-		var argument = system.args[index];
+		var argument = args[index];
 
 		switch (argument)
 		{
-			case "version":
-			case "--version":   return print("capp version 0.7.1");
+			case "-v":
+			case "--version":
+			    print("ojtest version 0.7.1");
+			    quit();
 
 			case "-h":
-			case "--help":      return printUsage();
+			case "--help":
+			    printUsage();
+			    break;
 
-			case "config":      return config.apply(this, system.args.slice(index + 1));
+            case "-I":
+                
+                break;
 
-			case "gen":         return gen.apply(this, system.args.slice(index + 1));
-
-			default:            print("unknown command " + argument);
+			default:
+			    unprocessed_args.push(argument);
 		}
 	}
+	
+	return unprocessed_args;
 }
 
+args = processArgs(args);
 print(args);
-processArgs();
 
 runner = [[OJTestRunnerText alloc] init];
 [runner startWithArguments:args];
