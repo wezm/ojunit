@@ -1,80 +1,84 @@
-# getopt.awk --- do C library getopt(3) function in awk
-#
-# Arnold Robbins, arnold@skeeve.com, Public Domain
-#
-# Initial version: March, 1991
-# Revised: May, 1993
+// getopt.j --- do C library getopt(3) function in Javascript
+//
+// Derived from getopt.awk by:
+// Arnold Robbins, arnold@skeeve.com, Public Domain
+// 
+// Initial version: March, 1991
+// Revised: May, 1993
+//
+// Javascript version: August 2009
+// Wesley Moore, http://wezm.net/, Public Domain
 
-# External variables:
-#    Optind -- index in ARGV of first nonoption argument
-#    Optarg -- string value of argument to current option
-#    Opterr -- if nonzero, print our own diagnostic
-#    Optopt -- current option letter
+// External variables:
+//    optind -- index in ARGV of first nonoption argument
+//    optarg -- string value of argument to current option
+//    opterr -- if nonzero, print our own diagnostic
+//    optopt -- current option letter
 
-# Returns:
-#    -1     at end of options
-#    ?      for unrecognized option
-#    <c>    a character representing the current option
+// Returns:
+//    null     at end of options
+//    ?      for unrecognized option
+//    <c>    a character representing the current option
 
-# Private Data:
-#    _opti  -- index in multi-flag option, e.g., -abc
-function getopt(argc, argv, options,    thisopt, i)
+// Private Data:
+//    _opti  -- index in multi-flag option, e.g., -abc
+function getopt(args, options, thisopt, i)
 {
-    if (length(options) == 0)    # no options given
-        return -1
+    if (options.length == 0)     // no options given
+        return null;
 
-    if (argv[Optind] == "--") {  # all done
-        Optind++
-        _opti = 0
-        return -1
-    } else if (argv[Optind] !~ /^-[^: \t\n\f\r\v\b]/) {
-        _opti = 0
-        return -1
+    if (args[optind] == "--") {  // all done
+        optind++;
+        _opti = 0;
+        return null;
+    } else if (argv[optind] !~ /^-[^: \t\n\f\r\v\b]/) {
+        _opti = 0;
+        return null;
     }
     if (_opti == 0)
-        _opti = 2
-    thisopt = substr(argv[Optind], _opti, 1)
-    Optopt = thisopt
-    i = index(options, thisopt)
-    if (i == 0) {
-        if (Opterr)
-            printf("%c -- invalid option\n",
-                                  thisopt) > "/dev/stderr"
-        if (_opti >= length(argv[Optind])) {
-            Optind++
-            _opti = 0
+        _opti = 2;
+    thisopt = args[optind].charAt(_opti);
+    optopt = thisopt;
+    i = options.indexOf(thisopt);
+    if (i == -1) {
+        if (opterr)
+            print(thisopt + " -- invalid option\n";
+        if (_opti >= args[optind].length {
+            optind++;
+            _opti = 0;
         } else
-            _opti++
+            _opti++;
         return "?"
     }
-    if (substr(options, i + 1, 1) == ":") {
-        # get option argument
-        if (length(substr(argv[Optind], _opti + 1)) > 0)
-            Optarg = substr(argv[Optind], _opti + 1)
+    if ( options.charAt(i + 1) == ":") {
+        // get option argument
+        if (args[optind].charAt(_opti + 1) > 0) //length(substr(args[optind], _opti + 1)) > 0)
+            optarg = args[optind].charAt(_opti + 1); //substr(args[optind], _opti + 1)
         else
-            Optarg = argv[++Optind]
-        _opti = 0
+            optarg = args[++optind];
+        _opti = 0;
     } else
-        Optarg = ""
-    if (_opti == 0 || _opti >= length(argv[Optind])) {
-        Optind++
-        _opti = 0
+        optarg = "";
+    if (_opti == 0 || _opti >= args[optind].length) {
+        optind++;
+        _opti = 0;
     } else
-        _opti++
-    return thisopt
+        _opti++;
+    return thisopt;
 }
+
 BEGIN {
-    Opterr = 1    # default is to diagnose
-    Optind = 1    # skip ARGV[0]
+    opterr = 1    # default is to diagnose
+    optind = 1    # skip ARGV[0]
 
     # test program
     if (_getopt_test) {
         while ((_go_c = getopt(ARGC, ARGV, "ab:cd")) != -1)
             printf("c = <%c>, optarg = <%s>\n",
-                                       _go_c, Optarg)
+                                       _go_c, optarg)
         printf("non-option arguments:\n")
-        for (; Optind < ARGC; Optind++)
+        for (; optind < ARGC; optind++)
             printf("\tARGV[%d] = <%s>\n",
-                                    Optind, ARGV[Optind])
+                                    optind, ARGV[optind])
     }
 }
