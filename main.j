@@ -1,5 +1,6 @@
 @import <Foundation/Foundation.j>
 
+@import "getopt.j"
 @import "OJTestCase.j"
 @import "OJTestSuite.j"
 @import "OJTestResult.j"
@@ -98,7 +99,33 @@ CPLogRegister(CPLogPrint, "warn");
 
 @end
 
-print(args);
+function printUsage()
+{
+    print("Usage: ojtest [OPTIONS] tests");
+    print("\t-I dir\tAdd <dir> to the objj search paths.");
+    print("\t-v\tShow the ojunit version and exit.");
+    print("\t-h\tShow this help.");
+    quit();
+};
+
+var opt;
+while ((opt = GetOpt.getopt(args, "hvI:")) != null)
+{
+    switch(opt)
+    {
+        case 'h':
+            printUsage();
+        case 'v':
+            print("ojunit version: 0.7.1");
+            quit();
+        case 'I':
+            OBJJ_INCLUDE_PATHS.unshift(GetOpt.optarg);
+            break;
+        default:
+            print("Error: unknown argument '" + opt + "'");
+            printUsage();
+    }
+}
 
 runner = [[OJTestRunnerText alloc] init];
-[runner startWithArguments:args];
+[runner startWithArguments:args.slice(GetOpt.optind)];
